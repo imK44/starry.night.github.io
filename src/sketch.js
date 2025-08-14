@@ -1,3 +1,7 @@
+import { drawArrow, drawHearts } from "./ui.js";
+import { SAW, SPARK } from "./enemies.js";
+import { Player } from "./player.js";
+
 /*
 
 The Game Project
@@ -5,15 +9,9 @@ The Game Project
 */
 
 
-var gameChar_x;
-var gameChar_y;
 var floorPos_y;
 
-var isLeft = false;
-var isRight = false;
-var isFalling = false;
-var isPlummeting = false;
-var isJump = false;
+let player;
 
 var canyons;
 var turning_flow_array;
@@ -130,8 +128,7 @@ function startGame()
     level_complete = false;
 
     endurance_time = 100; //recovery from saw
-    gameChar_x = width/2;
-    gameChar_y = floorPos_y;
+    player = new Player(width/2, floorPos_y);
 
 
 
@@ -450,7 +447,7 @@ function draw()
     sky.draw_sky();
     sky.update_sky();
     
-    draw_Hearts(lives);
+    drawHearts(lives);
 
     lake.drawLake();
     lake.drawLake_flow();
@@ -475,7 +472,7 @@ function draw()
     create_tree_and_mountain(trees,mountains);
 
     push();
-    translate((width/2 - gameChar_x)*0.3+ cam_deviation,0);
+    translate((width/2 - player.x)*0.3+ cam_deviation,0);
     START_CLOUDS.drawCloud();
     draw_mountain(mountains);
     draw_tree(trees);
@@ -483,14 +480,14 @@ function draw()
 
 
     push();
-    cameraPosX = width/2 - gameChar_x + cam_deviation;
+    cameraPosX = width/2 - player.x + cam_deviation;
     translate(cameraPosX,0);
     draw_canyons(canyons); //draw the canyon
     saws.draw(); // draw saws (kind of enemies)
     draw_obstacle(obstacles); // hurdles and slides
-    start_draw_arrow(100,'blue');
-    start_draw_arrow(3000,'red');
-    start_draw_arrow(4000,'green');
+    start_drawArrow(100,'blue');
+    start_drawArrow(3000,'red');
+    start_drawArrow(4000,'green');
     check_saws(saws.saws_array); // check contact with saws
     render_finishline(finishLine,0); // draw the finish line behind game character 1/2
     for (var i = 0; i< collectables.length; i++) // check collectables
@@ -509,36 +506,36 @@ function draw()
     //the game character drawing start
     if(!playerDeath)
     {
-        if(isLeft && isFalling)
+        if(player.isLeft && player.isFalling)
         {
-            draw_left_right_head(gameChar_x,gameChar_y,-1, 20);
-            draw_left_right_jump_body(gameChar_x, gameChar_y,-1);
+            draw_left_right_head(player.x,player.y,-1, 20);
+            draw_left_right_jump_body(player.x, player.y,-1);
         }
-        else if(isRight && isFalling)
+        else if(player.isRight && player.isFalling)
         {
-            draw_left_right_head(gameChar_x,gameChar_y,1, 20);
-            draw_left_right_jump_body(gameChar_x, gameChar_y,1);
+            draw_left_right_head(player.x,player.y,1, 20);
+            draw_left_right_jump_body(player.x, player.y,1);
         }
-        else if(isLeft)
+        else if(player.isLeft)
         {
-            draw_left_right_head(gameChar_x,gameChar_y,-1, 0);
-            draw_left_right_ground_body(gameChar_x,gameChar_y,-1);
+            draw_left_right_head(player.x,player.y,-1, 0);
+            draw_left_right_ground_body(player.x,player.y,-1);
 
         }
-        else if(isRight)
+        else if(player.isRight)
         {
-            draw_left_right_head(gameChar_x,gameChar_y,1, 0);
-            draw_left_right_ground_body(gameChar_x,gameChar_y,1);  
+            draw_left_right_head(player.x,player.y,1, 0);
+            draw_left_right_ground_body(player.x,player.y,1);  
         }
-        else if(isFalling || isPlummeting)
+        else if(player.isFalling || player.isPlummeting)
         {
-            draw_facing_forward_face(gameChar_x,gameChar_y+27,260);
-            draw_body_jumping_faceforward(gameChar_x,gameChar_y);
+            draw_facing_forward_face(player.x,player.y+27,260);
+            draw_body_jumping_faceforward(player.x,player.y);
         }
         else
         {
-            draw_facing_forward_face(gameChar_x,gameChar_y,170);
-            draw_facing_forward_body(gameChar_x,gameChar_y);
+            draw_facing_forward_face(player.x,player.y,170);
+            draw_facing_forward_body(player.x,player.y);
         }
 
     }
@@ -586,7 +583,7 @@ function draw()
 
     ///////////INTERACTION CODE//////////
 
-    if(abs(ground_level-gameChar_y)<3 && (isLeft||isRight) && bumpSoundCounter < 1 && !playerDeath)
+    if(abs(ground_level-player.y)<3 && (player.isLeft||player.isRight) && bumpSoundCounter < 1 && !playerDeath)
     {   
         if(!movingSoundisPlaying)
         {
@@ -607,19 +604,19 @@ function draw()
     bump_obstacles();
     playBump();
 
-    if(isLeft)
+    if(player.isLeft)
     {
-        gameChar_x -= 3;
+        player.x -= 3;
     }
 
-    else if(isRight)
+    else if(player.isRight)
     {
-        gameChar_x += 3;
+        player.x += 3;
     }
 
 }
 
-function start_draw_arrow(x,c_colour)
+function start_drawArrow(x,c_colour)
 {
 
     if(pointer.x < 250)
@@ -634,14 +631,14 @@ function start_draw_arrow(x,c_colour)
     for(var i = 0; i< 3; i++)
     {   
 
-        draw_arrow(x+(50*i),floorPos_y+35,0.7,100+(50*i), 100+(50*i) + 50, c_colour);
+        drawArrow(x+(50*i),floorPos_y+35,0.7,100+(50*i), 100+(50*i) + 50, c_colour);
     }
 }
 function check_saws(saws_array)
 {
     for(var i = 0; i< saws_array.length; i++)
     {
-        if(dist(gameChar_x, gameChar_y,saws_array[i].x,saws_array[i].y)<20 && !playerDeath)
+        if(dist(player.x, player.y,saws_array[i].x,saws_array[i].y)<20 && !playerDeath)
         {   
             meet_with_saw = true;
             break;
@@ -659,18 +656,18 @@ function dead_scenario(statement_to_check)
 {
     if(statement_to_check)
     {
-        if(isLeft)
+        if(player.isLeft)
         {
-            gameChar_x += 2;
+            player.x += 2;
         }
-        if(isRight)
+        if(player.isRight)
         {
-            gameChar_x -= 2;
+            player.x -= 2;
         }
         cam_deviation = random(-2,2);
         noStroke();
         fill(255,10,10,colour_transparent);
-        rect(gameChar_x - width/2,0,gameChar_x + width/2, height);
+        rect(player.x - width/2,0,player.x + width/2, height);
         colour_transparent ++;
         endurance_time --;        
     }
@@ -685,19 +682,19 @@ function keyPressed()
 {   
     if(keyCode == 37)
     {      
-        isLeft = true;
+        player.isLeft = true;
 
     }
 
     if(keyCode == 39)
     {   
-        isRight = true;
+        player.isRight = true;
 
     }
 
-    if(keyCode == 32 && abs(gameChar_y-ground_level) < 3 && !level_complete)
+    if(keyCode == 32 && abs(player.y-ground_level) < 3 && !level_complete)
     {
-        gameChar_y -= 180;
+        player.y -= 180;
         jumpSound.play();
 
     }
@@ -708,17 +705,17 @@ function keyReleased()
 {
     if(keyCode == 37)
     {   
-        isLeft = false;
+        player.isLeft = false;
         movingSound.stop();
     }
     if(keyCode == 39)
     {   
-        isRight = false;
+        player.isRight = false;
         movingSound.stop();
     }
     if(keyCode == 32)
     {
-        isJump = false;
+        player.isJump = false;
     }
 }
 
@@ -745,7 +742,7 @@ function winning_message()
 
 function checkPlayerDie()
 {   
-    if(gameChar_y - 100 > height || endurance_time <=0)
+    if(player.y - 100 > height || endurance_time <=0)
     {
         if(lives > 1)
         {
@@ -780,10 +777,10 @@ function gameOver()
 // scene drawing functions
 function check_finishline(t_finishline)
 {
-    if(gameChar_x > t_finishline.xpos)
+    if(player.x > t_finishline.xpos)
     {
-        elasiticy_x = (gameChar_x-finishLine.xpos)*10;
-        elasiticy_y = (gameChar_y-460)*10;
+        elasiticy_x = (player.x-finishLine.xpos)*10;
+        elasiticy_y = (player.y-460)*10;
     }
 
     else
@@ -975,7 +972,7 @@ function CREATE_CLOUDS()
         var tempt_array = [];
         for(var i = 0; i < 4; i++)
         {   
-            var basic_value = gameChar_x * (1/3.35)+(cam_deviation * (-1));//
+            var basic_value = player.x * (1/3.35)+(cam_deviation * (-1));//
             var x = random(basic_value +1000, basic_value + 2000);
             var y = random(50, 200);
             var v = createVector(x,y);
@@ -1030,7 +1027,7 @@ function CREATE_CLOUDS()
     this.createCloud = function()
     {   
 
-        if (gameChar_x * (1/3.35) + 1000 +(cam_deviation * -1) > this.findBiggestCloud())// 
+        if (player.x * (1/3.35) + 1000 +(cam_deviation * -1) > this.findBiggestCloud())// 
         {
             this.checkCloud();
         }
@@ -1094,7 +1091,7 @@ function CREATE_CLOUDS()
         }
         for(var i = CLOUDS.length-1; i > 0; i--)
         {
-            if(CLOUDS[i].x < gameChar_x*(1/3.35) + cam_deviation - 300) 
+            if(CLOUDS[i].x < player.x*(1/3.35) + cam_deviation - 300) 
             {
                 CLOUDS.splice(i,1);
             }
@@ -1638,7 +1635,7 @@ function check_canyon(t_canyon)
 {   
     for(var i=0; i< t_canyon.length; i++)
     {
-        if (gameChar_x-8 > t_canyon[i].xpos && gameChar_x +8  < t_canyon[i].xpos+t_canyon[i].width -15 && gameChar_y >= t_canyon[i].ypos)    
+        if (player.x-8 > t_canyon[i].xpos && player.x +8  < t_canyon[i].xpos+t_canyon[i].width -15 && player.y >= t_canyon[i].ypos)    
         {   
             fall_canyon(t_canyon[i]);
         }
@@ -1649,42 +1646,42 @@ function fall_canyon(t_canyon)
 {
     make_char_no_move();
 
-    if(gameChar_y < t_canyon.ypos + 70)
+    if(player.y < t_canyon.ypos + 70)
     {   
-        gameChar_y += 2;
-        if(gameChar_x > t_canyon.xpos+ t_canyon.width/2)
+        player.y += 2;
+        if(player.x > t_canyon.xpos+ t_canyon.width/2)
         {
-            gameChar_x -= 2;
+            player.x -= 2;
         }
-        if(gameChar_x < t_canyon.xpos+ t_canyon.width/2)
+        if(player.x < t_canyon.xpos+ t_canyon.width/2)
         {
-            gameChar_x += 2;
+            player.x += 2;
         }
     }
 
     else
     {   
-        isFalling = true;
-        gameChar_y += 8;    
+        player.isFalling = true;
+        player.y += 8;    
     }
 }
 
 function make_char_no_move()
 {
-    if(isLeft)
+    if(player.isLeft)
     {
-        gameChar_x += 3;
+        player.x += 3;
     }
 
-    if(isRight)
+    if(player.isRight)
     {
-        gameChar_x -= 3;
+        player.x -= 3;
     }   
 }
 
 function checkCollectables(t_collectable)
 {   
-    d = dist(t_collectable.xpos,t_collectable.ypos-10,gameChar_x,gameChar_y);
+    d = dist(t_collectable.xpos,t_collectable.ypos-10,player.x,player.y);
     if(d<40)
     {
         t_collectable.isfound = true;
@@ -1718,16 +1715,16 @@ function bump_obstacles()
 {   
     if(bump_check(obstacles) != undefined)
     {   
-        if(floorPos_y - obstacles[bump_check(obstacles)].o_height< gameChar_y-2)
+        if(floorPos_y - obstacles[bump_check(obstacles)].o_height< player.y-2)
         {
-            if(isLeft && gameChar_x -(30) -3 < obstacles[bump_check(obstacles)].xpos + obstacles[bump_check(obstacles)].o_width && gameChar_x > obstacles[bump_check(obstacles)].xpos + obstacles[bump_check(obstacles)].o_width/2)
+            if(player.isLeft && player.x -(30) -3 < obstacles[bump_check(obstacles)].xpos + obstacles[bump_check(obstacles)].o_width && player.x > obstacles[bump_check(obstacles)].xpos + obstacles[bump_check(obstacles)].o_width/2)
             {
-                gameChar_x += 3;
+                player.x += 3;
                 bumpSoundCounter += 1;
             }
-            else if(isRight && gameChar_x +(30) +3> obstacles[bump_check(obstacles)].xpos && gameChar_x < obstacles[bump_check(obstacles)].xpos + obstacles[bump_check(obstacles)].o_width/2)
+            else if(player.isRight && player.x +(30) +3> obstacles[bump_check(obstacles)].xpos && player.x < obstacles[bump_check(obstacles)].xpos + obstacles[bump_check(obstacles)].o_width/2)
             {
-                gameChar_x -= 3;
+                player.x -= 3;
                 bumpSoundCounter += 1;
             }
 
@@ -1751,8 +1748,8 @@ function bump_check(t_obstacles)
     var obs_array = [];
     for(var i = 0; i< t_obstacles.length; i++)
     {
-        if (gameChar_x + (30) > obstacles[i].xpos && 
-            gameChar_x - (30) < obstacles[i].xpos + obstacles[i].o_width)
+        if (player.x + (30) > obstacles[i].xpos && 
+            player.x - (30) < obstacles[i].xpos + obstacles[i].o_width)
         { 
             obs_array.push(i);  
         }
@@ -1780,8 +1777,8 @@ function check_obstacles(t_obstacles)
     var obs_array = [];
     for(var i = 0; i< t_obstacles.length; i++)
     {
-        if ((gameChar_x + (30)-(10) > t_obstacles[i].xpos && gameChar_x - (30)+(10) < t_obstacles[i].xpos+ t_obstacles[i].o_width) || 
-            (gameChar_x - (30) +(10) < t_obstacles[i].xpos + t_obstacles[i].o_width && gameChar_x + (30) -(10)>t_obstacles[i].xpos))
+        if ((player.x + (30)-(10) > t_obstacles[i].xpos && player.x - (30)+(10) < t_obstacles[i].xpos+ t_obstacles[i].o_width) || 
+            (player.x - (30) +(10) < t_obstacles[i].xpos + t_obstacles[i].o_width && player.x + (30) -(10)>t_obstacles[i].xpos))
         { 
             obs_array.push(i);  
         }
@@ -1821,11 +1818,11 @@ function check_gravity()
 
 function fall_gravity(t_ground)
 {
-    if(gameChar_y < t_ground)
+    if(player.y < t_ground)
     {   
-        isFalling = true; 
-        gameChar_y += 3;
-        if(abs(gameChar_y-t_ground)<2)
+        player.isFalling = true; 
+        player.y += 3;
+        if(abs(player.y-t_ground)<2)
         {
             landingSound.play();
         }
@@ -1833,7 +1830,7 @@ function fall_gravity(t_ground)
     }
     else
     {   
-        isFalling = false;
+        player.isFalling = false;
     }
 }
 
