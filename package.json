@@ -1,0 +1,17 @@
+{
+  "name": "starry.night.github.io",
+  "version": "1.0.0",
+  "description": "Starry Night is a side-scrolling platformer built with [p5.js](https://p5js.org/) where you guide a runner across a glowing landscape filled with canyons, obstacles, and collectibles. The goal is to reach the end of the level without losing all of your hearts.",
+  "main": "arrow.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "eslint": "^8.57.0"
+  }
+}
