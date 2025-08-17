@@ -2,6 +2,8 @@
 
 Starry Night is a side-scrolling platformer built with [p5.js](https://p5js.org/) where you guide a runner across a glowing landscape filled with canyons, obstacles, and collectibles. The goal is to reach the end of the level without losing all of your hearts.
 
+### Deployed link - https://starry-night-kmt.vercel.app/
+
 ## Running Locally
 1. Clone this repository.
 2. Start a local HTTP server in the project root and open the site in your browser:
@@ -24,12 +26,5 @@ Starry Night is a side-scrolling platformer built with [p5.js](https://p5js.org/
 - [p5.sound](https://p5js.org/reference/#/libraries/p5.sound)
 - Vanilla JavaScript and HTML5.
 
-## Contributing
-Contributions are welcome!
-1. Fork the repository and create a feature branch.
-2. Make your changes and ensure the project still runs.
-3. Open a pull request with a description of your updates.
-
-## Acknowledgements
-- Built with the help of the p5.js community.
-- Sound effects and music sourced from the files in the `assets` directory (see file names for attribution).
+## Demo
+![App in action](demo/sn_demo_rs.gif)
