@@ -28,3 +28,5 @@ Starry Night is a side-scrolling platformer built with [p5.js](https://p5js.org/
 
 ## Demo
 ![App in action](demo/sn_demo_rs.gif)
+
+[▶️ Gameplay Demo on YouTube] https://youtu.be/P0aiHYgD2tw
