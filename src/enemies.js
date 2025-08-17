@@ -1,4 +1,4 @@
-function SAW(x,y,scale,left_end,right_end,offset)
+export function SAW(x,y,scale,left_end,right_end,offset)
 {
     this.x = x;
     this.y = y;
@@ -149,7 +149,7 @@ function SAW(x,y,scale,left_end,right_end,offset)
 
 }
 
-function SPARK(x,y,xSpeed, ySpeed)
+export function SPARK(x,y,xSpeed, ySpeed)
 {
     this.x = x;
     this.y = y;
